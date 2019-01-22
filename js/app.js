@@ -54,16 +54,17 @@ VoteItem.prototype.winPercent = function() {
 
 // generates three -unique- numbers from 0 to the number of vote options -1
 function generateVoteOptions() {
-  var output = [];
-  while(output.length < images.length) {
+  while(disallowedNumbers.length < (images.length * 2)) {
     var test = Math.floor(Math.random() * voteOptions.length);
     if(!disallowedNumbers.includes(test)) {
-      output.push(test);
       disallowedNumbers.push(test);
     }
   }
-  disallowedNumbers = output;
-  return output;
+  for(var i=0; i<images.length; i++) {
+    disallowedNumbers.shift();
+  }
+
+  return disallowedNumbers;
 }
 
 function updateVoteOptions() {
