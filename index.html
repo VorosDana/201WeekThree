@@ -11,7 +11,6 @@
 
 <html>
   <body>
-    <script href="js/app.js"></script>
     <header>
       <h1>Welcome to Busmall!</h1>
       <h2>Thank you for participating in the Busmall Customer Survery!</h2>
@@ -19,28 +18,28 @@
 
     <main>
       <p>Please pick the item that you would prefer to purchase:</p>
+      <section id='vote-options'>
+        <div>
+          <img id="option-three"/>
+          <button>Option 3</button>
+        </div>
 
-      <div>
-        <img/>
-        <button>Option 3</button>
-      </div>
+        <div>
+          <img id="option-two"/>
+          <button>Option 2</button>
+        </div> 
 
-      <div>
-        <img/>
-        <button>Option 2</button>
-      </div> 
-
-      <div>
-        <img/>
-        <button>Option 1</button>
-      </div>
-
+        <div>
+          <img id="option-one"/>
+          <button>Option 1</button>
+        </div>
+      </section>
       <p>Please vote at least 25 times to see results</p>
-      <button>Show Results</button>
-      <table></table>
+      <button id="show-results" disabled="true">Show Results</button>
+      <table id="results-table"></table>
 
     </main>
-
+    <script src="js/app.js"></script>
     <footer>
       <p>Thank you for your participation!</p>
     </footer>
