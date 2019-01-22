@@ -2,9 +2,11 @@
 
 var voteOptions = [];
 var resultsTable = document.getElementById('results-table');
-var optionOne = document.getElementById('option-one');
-var optionTwo = document.getElementById('option-two');
-var optionThree = document.getElementById('option-three');
+// var optionOne = document.getElementById('option-one');
+// var optionTwo = document.getElementById('option-two');
+// var optionThree = document.getElementById('option-three');
+var disallowedNumbers = [];
+var images = document.getElementsByTagName('img');
 var totalVotes = 0;
 var voteOptionNames = [];
 
@@ -25,12 +27,17 @@ VoteItem.prototype.render = function(imgLoc) {
 }
 
 function voteHandler(event) {
-  var firstItem = voteOptions[voteOptionNames.indexOf(optionOne.nextElementSibling.id)];
-  var secondItem = voteOptions[voteOptionNames.indexOf(optionTwo.nextElementSibling.id)];
-  var thirdItem = voteOptions[voteOptionNames.indexOf(optionThree.nextElementSibling.id)];
-  firstItem.timesAppeared++;
-  secondItem.timesAppeared++;
-  thirdItem.timesAppeared++;
+  // var firstItem = voteOptions[voteOptionNames.indexOf(optionOne.nextElementSibling.id)];
+  // var secondItem = voteOptions[voteOptionNames.indexOf(optionTwo.nextElementSibling.id)];
+  // var thirdItem = voteOptions[voteOptionNames.indexOf(optionThree.nextElementSibling.id)];
+  // firstItem.timesAppeared++;
+  // secondItem.timesAppeared++;
+  // thirdItem.timesAppeared++;
+
+  for(var i=0; i<images.length; i++)
+  {
+    voteOptions[voteOptionNames.indexOf(images[i].nextElementSibling.id)].timesAppeared++;
+  }
 
   var votedItem = voteOptions[voteOptionNames.indexOf(event.target.id)];
   votedItem.votes++;
@@ -48,20 +55,27 @@ VoteItem.prototype.winPercent = function() {
 // generates three -unique- numbers from 0 to the number of vote options -1
 function generateVoteOptions() {
   var output = [];
-  while(output.length < 3) {
+  while(output.length < images.length) {
     var test = Math.floor(Math.random() * voteOptions.length);
-    if(!output.includes(test)) {
+    if(!disallowedNumbers.includes(test)) {
       output.push(test);
+      disallowedNumbers.push(test);
     }
   }
+  disallowedNumbers = output;
   return output;
 }
 
 function updateVoteOptions() {
   var newOptions = generateVoteOptions();
-  voteOptions[newOptions[0]].render(optionOne);
-  voteOptions[newOptions[1]].render(optionTwo);
-  voteOptions[newOptions[2]].render(optionThree);
+
+  // voteOptions[newOptions[0]].render(optionOne);
+  // voteOptions[newOptions[1]].render(optionTwo);
+  // voteOptions[newOptions[2]].render(optionThree);
+
+  for(var i=0; i<images.length; i++) {
+    voteOptions[newOptions[i]].render(images[i]);
+  }
 }
 
 function renderTable() {
@@ -119,9 +133,13 @@ new VoteItem('img/usb.gif', 'Tentacle USB Drive');
 new VoteItem('img/water-can.jpg', 'Novelty Watering Can');
 new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass');
 
-optionOne.nextElementSibling.addEventListener('click', voteHandler);
-optionTwo.nextElementSibling.addEventListener('click', voteHandler);
-optionThree.nextElementSibling.addEventListener('click', voteHandler);
+// optionOne.nextElementSibling.addEventListener('click', voteHandler);
+// optionTwo.nextElementSibling.addEventListener('click', voteHandler);
+// optionThree.nextElementSibling.addEventListener('click', voteHandler);
+
+for(var i=0; i<images.length; i++) {
+  images[i].nextElementSibling.addEventListener('click', voteHandler);
+}
 
 document.getElementById('show-results').addEventListener('click', renderTable);
 
