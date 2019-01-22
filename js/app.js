@@ -1,7 +1,8 @@
 'use strict';
 
 var voteOptions = [];
-var resultsTable = document.getElementById('results-table');
+var resultsChart;
+var resultsChartDOM = document.getElementById('results-chart');
 // var optionOne = document.getElementById('option-one');
 // var optionTwo = document.getElementById('option-two');
 // var optionThree = document.getElementById('option-three');
@@ -27,18 +28,6 @@ VoteItem.prototype.render = function(imgLoc) {
 }
 
 function voteHandler(event) {
-  // var firstItem = voteOptions[voteOptionNames.indexOf(optionOne.nextElementSibling.id)];
-  // var secondItem = voteOptions[voteOptionNames.indexOf(optionTwo.nextElementSibling.id)];
-  // var thirdItem = voteOptions[voteOptionNames.indexOf(optionThree.nextElementSibling.id)];
-  // firstItem.timesAppeared++;
-  // secondItem.timesAppeared++;
-  // thirdItem.timesAppeared++;
-
-  if(totalVotes > 24) {
-    renderTable();
-    return;
-  }
-
   for(var i=0; i<images.length; i++)
   {
     voteOptions[voteOptionNames.indexOf(images[i].nextElementSibling.id)].timesAppeared++;
@@ -50,6 +39,11 @@ function voteHandler(event) {
   // if(totalVotes > 24) {
   //   document.getElementById('show-results').disabled = false;
   // }
+
+  if(totalVotes > 24) {
+    renderChart();
+    return;
+  }
   updateVoteOptions();
 }
 
@@ -84,40 +78,96 @@ function updateVoteOptions() {
   }
 }
 
-function renderTable() {
-  resultsTable.innerHTML = '';
-
+function renderChart() {
   document.getElementsByTagName('section')[0].textContent = '';
 
-  var tableRow = resultsTable.insertRow(0);
-  var cellEl = document.createElement('th');
-  cellEl.textContent = 'Item';
-  tableRow.appendChild(cellEl);
-  cellEl = document.createElement('th');
-  cellEl.textContent = 'Times Voted For';
-  tableRow.appendChild(cellEl);
-  cellEl = document.createElement('th');
-  cellEl.textContent ='Times Appeared';
-  tableRow.appendChild(cellEl);
-  cellEl = document.createElement('th');
-  cellEl.textContent = '% Wins';
-  tableRow.appendChild(cellEl);
+  var data = buildChartData();
+  var ctx = resultsChartDOM.getContext('2d');
 
-  for(var i = 0; i < voteOptions.length; i++) {
-    tableRow = resultsTable.insertRow(i+1);
-    cellEl = document.createElement('td');
-    cellEl.textContent = voteOptions[i].name;
-    tableRow.appendChild(cellEl);
-    cellEl = document.createElement('td');
-    cellEl.textContent = voteOptions[i].votes;
-    tableRow.appendChild(cellEl);
-    cellEl = document.createElement('td');
-    cellEl.textContent = voteOptions[i].timesAppeared;
-    tableRow.appendChild(cellEl);
-    cellEl = document.createElement('td');
-    cellEl.textContent = voteOptions[i].winPercent();
-    tableRow.appendChild(cellEl);
+  resultsChart = new Chart(ctx, {
+    type: 'polarArea',
+    data: data,
+    options: {
+      responsive: false,
+      animation: {
+        duration: 4000,
+        easing: 'easeInOutBounce'
+      }
+    },
+    scales: {
+      yAxes: [{
+        tick: {
+
+        }
+      }]
+    }
   }
+  )
+  document.getElementById('closing').textContent = 'Thank you for participating!';
+}
+
+function buildChartData() {
+  return {
+    labels: voteOptionNames,
+    datasets: [{
+      data: tallyVotes(),
+
+      // Color gradients courtesy of http://respekt.us/index.html
+      backgroundColor: [
+        '#9809f2',
+        '#900dec',
+        '#8911e7',
+        '#8215e2',
+        '#7a19dd',
+        '#731dd8',
+        '#6c21d3',
+        '#6425ce',
+        '#5d29c9',
+        '#562dc4',
+        '#4e31bf',
+        '#4735ba',
+        '#4039b5',
+        '#393db0',
+        '#3141ab',
+        '#2a45a6',
+        '#2349a1',
+        '#1b4d9c',
+        '#145197',
+        '#065a8d'
+      ],
+
+      borderColor: [
+        '#3c0360',
+        '#39045e',
+        '#36065c',
+        '#33075a',
+        '#300958',
+        '#2d0b56',
+        '#2a0c54',
+        '#270e52',
+        '#241050',
+        '#21114e',
+        '#1f134c',
+        '#1c154a',
+        '#191648',
+        '#161846',
+        '#131a44',
+        '#101b42',
+        '#0d1d40',
+        '#0a1f3e',
+        '#07203c',
+        '#022438'
+      ]
+    }]
+  }
+}
+
+function tallyVotes() {
+  var output = [];
+  for(var i=0; i<voteOptions.length; i++) {
+    output.push(voteOptions[i].votes);
+  }
+  return output;
 }
 
 new VoteItem('img/bag.jpg', 'Roller Bag');
