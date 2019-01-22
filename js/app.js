@@ -34,6 +34,11 @@ function voteHandler(event) {
   // secondItem.timesAppeared++;
   // thirdItem.timesAppeared++;
 
+  if(totalVotes > 24) {
+    renderTable();
+    return;
+  }
+
   for(var i=0; i<images.length; i++)
   {
     voteOptions[voteOptionNames.indexOf(images[i].nextElementSibling.id)].timesAppeared++;
@@ -42,9 +47,9 @@ function voteHandler(event) {
   var votedItem = voteOptions[voteOptionNames.indexOf(event.target.id)];
   votedItem.votes++;
   totalVotes++;
-  if(totalVotes > 24) {
-    document.getElementById('show-results').disabled = false;
-  }
+  // if(totalVotes > 24) {
+  //   document.getElementById('show-results').disabled = false;
+  // }
   updateVoteOptions();
 }
 
@@ -81,6 +86,8 @@ function updateVoteOptions() {
 
 function renderTable() {
   resultsTable.innerHTML = '';
+
+  document.getElementsByTagName('section')[0].textContent = '';
 
   var tableRow = resultsTable.insertRow(0);
   var cellEl = document.createElement('th');
@@ -142,6 +149,6 @@ for(var i=0; i<images.length; i++) {
   images[i].nextElementSibling.addEventListener('click', voteHandler);
 }
 
-document.getElementById('show-results').addEventListener('click', renderTable);
+// document.getElementById('show-results').addEventListener('click', renderTable);
 
 updateVoteOptions();
