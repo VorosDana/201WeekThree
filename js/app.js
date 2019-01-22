@@ -90,7 +90,7 @@ function renderChart() {
     options: {
       responsive: false,
       animation: {
-        duration: 2000,
+        duration: 4000,
         easing: 'easeInOutBounce'
       }
     },
@@ -136,7 +136,7 @@ function buildChartData() {
         '#065a8d'
       ],
 
-      hoverBackgroundColor: [
+      borderColor: [
         '#3c0360',
         '#39045e',
         '#36065c',
