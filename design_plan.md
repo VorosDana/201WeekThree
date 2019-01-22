@@ -46,3 +46,10 @@ JS
   Force shuffle to use least shown items? "No, sample size is large enough to make that counterproductive"
   After 25 votes, enable a button to show results
   On pushing that button, add a table showing each image and its statistics
+
+  Update code to handle any number of pictures
+    store images in array (well, lis) acquired by searching the document for all img elements, can use global array
+    Iterate over that array when assigning products
+    Update number generator to return n random numbers, where n is the number of elements in the array
+  
+  Update code to not repeat images in sequential sets
