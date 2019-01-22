@@ -62,7 +62,15 @@ main p:nth-of-type(2) {
 
 table {
   margin: 0 0 1em;
-  border: 2px solid black;
+  border: 1px solid #566A96;
+  border-spacing: 2px;
+  background-color: #183770;
+  border-collapse: separate;
+}
+
+th, td {
+  border: 1px solid #566A96;
+  background-color: #F7F7F8;
 }
 
 main > button {

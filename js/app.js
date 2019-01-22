@@ -18,13 +18,20 @@ function VoteItem(image, name) {
 }
 
 VoteItem.prototype.render = function(imgLoc) {
-  this.timesAppeared++;
+  // this.timesAppeared++;
   imgLoc.src = this.image;
   imgLoc.nextElementSibling.textContent = this.name;
   imgLoc.nextElementSibling.id = this.name;
 }
 
 function voteHandler(event) {
+  var firstItem = voteOptions[voteOptionNames.indexOf(optionOne.nextElementSibling.id)];
+  var secondItem = voteOptions[voteOptionNames.indexOf(optionTwo.nextElementSibling.id)];
+  var thirdItem = voteOptions[voteOptionNames.indexOf(optionThree.nextElementSibling.id)];
+  firstItem.timesAppeared++;
+  secondItem.timesAppeared++;
+  thirdItem.timesAppeared++;
+
   var votedItem = voteOptions[voteOptionNames.indexOf(event.target.id)];
   votedItem.votes++;
   totalVotes++;
