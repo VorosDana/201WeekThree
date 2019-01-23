@@ -134,9 +134,17 @@ function renderChart() {
       },
       scales: {
         xAxes: [{
-          tick: {
-            min:20,
-            max:20
+          ticks: {
+            autoSkip: false,
+            stepSize: 1,
+            min: 20,
+            max: 20
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            min: 0,
+            stepSize: 1
           }
         }]
       }
