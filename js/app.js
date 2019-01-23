@@ -74,9 +74,6 @@ function voteHandler(event) {
   var votedItem = voteOptions[voteOptionNames.indexOf(event.target.id)];
   votedItem.votes++;
   totalVotes++;
-  // if(totalVotes > 24) {
-  //   document.getElementById('show-results').disabled = false;
-  // }
 
   if(totalVotes > 24) {
     storeVoteData();
@@ -84,6 +81,12 @@ function voteHandler(event) {
     return;
   }
   updateVoteOptions();
+}
+
+function attachClickHandlers() {
+  for(var i=0; i<images.length; i++) {
+    images[i].nextElementSibling.addEventListener('click', voteHandler);
+  }
 }
 
 VoteItem.prototype.winPercent = function() {
@@ -107,10 +110,6 @@ function generateVoteOptions() {
 
 function updateVoteOptions() {
   var newOptions = generateVoteOptions();
-
-  // voteOptions[newOptions[0]].render(optionOne);
-  // voteOptions[newOptions[1]].render(optionTwo);
-  // voteOptions[newOptions[2]].render(optionThree);
 
   for(var i=0; i<images.length; i++) {
     voteOptions[newOptions[i]].render(images[i]);
@@ -147,6 +146,9 @@ function renderChart() {
             stepSize: 1
           }
         }]
+      },
+      legend: {
+        display: false
       }
     },
 
@@ -220,10 +222,7 @@ function tallyVotes() {
 }
 
 
-
-for(var i=0; i<images.length; i++) {
-  images[i].nextElementSibling.addEventListener('click', voteHandler);
-}
+attachClickHandlers();
 
 getStoredVoteData();
 
