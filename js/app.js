@@ -3,28 +3,66 @@
 var voteOptions = [];
 var resultsChart;
 var resultsChartDOM = document.getElementById('results-chart');
-// var optionOne = document.getElementById('option-one');
-// var optionTwo = document.getElementById('option-two');
-// var optionThree = document.getElementById('option-three');
 var disallowedNumbers = [];
 var images = document.getElementsByTagName('img');
 var totalVotes = 0;
 var voteOptionNames = [];
 
-function VoteItem(image, name) {
+function VoteItem(image, name, votes, timesAppeared) {
   this.name = name;
   this.image = image;
-  this.votes = 0;
-  this.timesAppeared = 0;
+  this.votes = votes;
+  this.timesAppeared = timesAppeared;
   voteOptions.push(this);
   voteOptionNames.push(this.name);
 }
 
 VoteItem.prototype.render = function(imgLoc) {
-  // this.timesAppeared++;
   imgLoc.src = this.image;
   imgLoc.nextElementSibling.textContent = this.name;
   imgLoc.nextElementSibling.id = this.name;
+}
+
+function buildVoteItems() {
+  new VoteItem('img/bag.jpg', 'Roller Bag', 0, 0);
+  new VoteItem('img/banana.jpg', 'Banana Slicer', 0, 0);
+  new VoteItem('img/bathroom.jpg', 'Tablet Stand', 0, 0);
+  new VoteItem('img/boots.jpg', 'Toeless Rain Boots', 0, 0);
+  new VoteItem('img/breakfast.jpg', 'Breakfast Staion', 0, 0);
+  new VoteItem('img/bubblegum.jpg', 'Bubble Gum', 0, 0);
+  new VoteItem('img/chair.jpg', 'Chair', 0, 0);
+  new VoteItem('img/cthulhu.jpg', 'Elder God', 0, 0);
+  new VoteItem('img/dog-duck.jpg', 'Dog Mask', 0, 0);
+  new VoteItem('img/dragon.jpg', 'Dragon Meat', 0, 0);
+  new VoteItem('img/pen.jpg', 'Pen', 0, 0);
+  new VoteItem('img/pet-sweep.jpg', 'Pet Sweeper', 0, 0);
+  new VoteItem('img/scissors.jpg', 'Pizza Scissors', 0, 0);
+  new VoteItem('img/shark.jpg', 'Shark Sleeping Bag', 0, 0);
+  new VoteItem('img/sweep.png', 'Mommy\'s Little Sweeper', 0, 0);
+  new VoteItem('img/tauntaun.jpg', 'Fantasy Sleeping Bag', 0, 0);
+  new VoteItem('img/unicorn.jpg', 'Unicorn Meat', 0, 0);
+  new VoteItem('img/usb.gif', 'Tentacle USB Drive', 0, 0);
+  new VoteItem('img/water-can.jpg', 'Novelty Watering Can', 0, 0);
+  new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass', 0, 0);
+}
+
+function getStoredVoteData() {
+  var storedData = JSON.parse(localStorage.getItem('vote-data'));
+
+  if(storedData) {
+    console.log(storedData);
+
+    for(var i=0; i<storedData.length; i++) {
+      new VoteItem(storedData[i].image, storedData[i].name, storedData[i].votes, storedData[i].timesAppeared);
+    }
+
+  } else {
+    buildVoteItems();
+  }
+}
+
+function storeVoteData() {
+  localStorage.setItem('vote-data', JSON.stringify(voteOptions));
 }
 
 function voteHandler(event) {
@@ -41,6 +79,7 @@ function voteHandler(event) {
   // }
 
   if(totalVotes > 24) {
+    storeVoteData();
     renderChart();
     return;
   }
@@ -85,22 +124,24 @@ function renderChart() {
   var ctx = resultsChartDOM.getContext('2d');
 
   resultsChart = new Chart(ctx, {
-    type: 'polarArea',
+    type: 'bar',
     data: data,
     options: {
       responsive: false,
       animation: {
         duration: 4000,
         easing: 'easeInOutBounce'
+      },
+      scales: {
+        xAxes: [{
+          tick: {
+            min:20,
+            max:20
+          }
+        }]
       }
     },
-    scales: {
-      yAxes: [{
-        tick: {
 
-        }
-      }]
-    }
   }
   )
   document.getElementById('closing').textContent = 'Thank you for participating!';
@@ -170,35 +211,12 @@ function tallyVotes() {
   return output;
 }
 
-new VoteItem('img/bag.jpg', 'Roller Bag');
-new VoteItem('img/banana.jpg', 'Banana Slicer');
-new VoteItem('img/bathroom.jpg', 'Tablet Stand');
-new VoteItem('img/boots.jpg', 'Toeless Rain Boots');
-new VoteItem('img/breakfast.jpg', 'Breakfast Staion');
-new VoteItem('img/bubblegum.jpg', 'Bubble Gum');
-new VoteItem('img/chair.jpg', 'Chair');
-new VoteItem('img/cthulhu.jpg', 'Elder God');
-new VoteItem('img/dog-duck.jpg', 'Dog Mask');
-new VoteItem('img/dragon.jpg', 'Dragon Meat');
-new VoteItem('img/pen.jpg', 'Pen');
-new VoteItem('img/pet-sweep.jpg', 'Pet Sweeper');
-new VoteItem('img/scissors.jpg', 'Pizza Scissors');
-new VoteItem('img/shark.jpg', 'Shark Sleeping Bag');
-new VoteItem('img/sweep.png', 'Mommy\s Little Sweeper');
-new VoteItem('img/tauntaun.jpg', 'Fantasy Sleeping Bag');
-new VoteItem('img/unicorn.jpg', 'Unicorn Meat');
-new VoteItem('img/usb.gif', 'Tentacle USB Drive');
-new VoteItem('img/water-can.jpg', 'Novelty Watering Can');
-new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass');
 
-// optionOne.nextElementSibling.addEventListener('click', voteHandler);
-// optionTwo.nextElementSibling.addEventListener('click', voteHandler);
-// optionThree.nextElementSibling.addEventListener('click', voteHandler);
 
 for(var i=0; i<images.length; i++) {
   images[i].nextElementSibling.addEventListener('click', voteHandler);
 }
 
-// document.getElementById('show-results').addEventListener('click', renderTable);
+getStoredVoteData();
 
 updateVoteOptions();
