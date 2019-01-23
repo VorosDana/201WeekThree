@@ -48,13 +48,15 @@ main div img {
   max-width: 300px;
   max-height: 400px;
   vertical-align: middle;
+  border: 2px solid #3A4866;
+  border-radius: 15px;
 }
 
 button {
   font-family: 'Lato', sans-serif;
   background-color: white;
   border: 2px solid #3A4866;
-  border-radius: 5px;
+  border-radius: 15px;
 }
 
 main div button {
@@ -79,13 +81,6 @@ table {
 th, td {
   border: 1px solid #566A96;
   background-color: #F7F7F8;
-}
-
-main > button {
-  display: block;
-  margin: 0 auto;
-  width: 100px;
-  height: 1.6em;
 }
 
 footer {
