@@ -85,21 +85,32 @@ function renderChart() {
   var ctx = resultsChartDOM.getContext('2d');
 
   resultsChart = new Chart(ctx, {
-    type: 'polarArea',
+    type: 'bar',
     data: data,
     options: {
+      // showXLabels: 20,
       responsive: false,
       animation: {
         duration: 4000,
         easing: 'easeInOutBounce'
-      }
-    },
-    scales: {
-      yAxes: [{
-        tick: {
+      },
 
-        }
-      }]
+    scales: {
+        xAxes: [{
+          ticks: {
+            autoSkip: false,
+            stepSize: 1,
+            min: 20,
+            max: 20
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            min: 0,
+            stepSize: 1
+          }
+        }]
+      }
     }
   }
   )
