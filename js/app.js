@@ -1,13 +1,15 @@
 'use strict';
 
 var voteOptions = [];
+var disallowedNumbers = [];
+var voteOptionNames = [];
+var totalVotes = 0;
 var resultsChart;
 var resultsChartDOM = document.getElementById('results-chart');
-var disallowedNumbers = [];
 var images = document.getElementsByTagName('img');
-var totalVotes = 0;
-var voteOptionNames = [];
+var closing = document.getElementById('closing');
 
+// Class that holds each product and associated vote data
 function VoteItem(image, name, votes, timesAppeared) {
   this.name = name;
   this.image = image;
@@ -22,6 +24,12 @@ VoteItem.prototype.render = function(imgLoc) {
   imgLoc.nextElementSibling.textContent = this.name;
   imgLoc.nextElementSibling.id = this.name;
 }
+
+VoteItem.prototype.winPercent = function() {
+  return (this.votes / this.timesAppeared * 100).toString() + '%';
+}
+
+// I just wanted to seperate the constructors out to easily bypass them if data already exists
 
 function buildVoteItems() {
   new VoteItem('img/bag.jpg', 'Roller Bag', 0, 0);
@@ -46,6 +54,8 @@ function buildVoteItems() {
   new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass', 0, 0);
 }
 
+// Get and Set to handle local storage of vote data
+
 function getStoredVoteData() {
   var storedData = JSON.parse(localStorage.getItem('vote-data'));
 
@@ -64,6 +74,9 @@ function getStoredVoteData() {
 function storeVoteData() {
   localStorage.setItem('vote-data', JSON.stringify(voteOptions));
 }
+
+// Click event handler, is attached to each button on page load
+// The button's id is changed each time the image is changed, id is used to put votes where they're needed
 
 function voteHandler(event) {
   for(var i=0; i<images.length; i++)
@@ -89,8 +102,14 @@ function attachClickHandlers() {
   }
 }
 
-VoteItem.prototype.winPercent = function() {
-  return (this.votes / this.timesAppeared * 100).toString() + '%';
+// Displays items to be voted on, and helper function
+
+function updateVoteOptions() {
+  var newOptions = generateVoteOptions();
+
+  for(var i=0; i<images.length; i++) {
+    voteOptions[newOptions[i]].render(images[i]);
+  }
 }
 
 // generates three -unique- numbers from 0 to the number of vote options -1
@@ -108,13 +127,7 @@ function generateVoteOptions() {
   return disallowedNumbers;
 }
 
-function updateVoteOptions() {
-  var newOptions = generateVoteOptions();
-
-  for(var i=0; i<images.length; i++) {
-    voteOptions[newOptions[i]].render(images[i]);
-  }
-}
+// draws the chart, and sets thank you message
 
 function renderChart() {
   document.getElementsByTagName('section')[0].textContent = '';
@@ -154,7 +167,7 @@ function renderChart() {
 
   }
   )
-  document.getElementById('closing').textContent = 'Thank you for participating!';
+  closing.textContent = 'Thank you for participating!';
 }
 
 function buildChartData() {
