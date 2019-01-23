@@ -130,7 +130,7 @@ function generateVoteOptions() {
 // draws the chart, and sets thank you message
 
 function renderChart() {
-  document.getElementsByTagName('section')[0].textContent = '';
+  document.getElementById('vote-options').textContent = '';
 
   var data = buildChartData();
   var ctx = resultsChartDOM.getContext('2d');
