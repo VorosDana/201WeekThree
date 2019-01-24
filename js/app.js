@@ -1,31 +1,82 @@
 'use strict';
 
 var voteOptions = [];
+var disallowedNumbers = [];
+var voteOptionNames = [];
+var totalVotes = 0;
 var resultsChart;
 var resultsChartDOM = document.getElementById('results-chart');
-// var optionOne = document.getElementById('option-one');
-// var optionTwo = document.getElementById('option-two');
-// var optionThree = document.getElementById('option-three');
-var disallowedNumbers = [];
 var images = document.getElementsByTagName('img');
-var totalVotes = 0;
-var voteOptionNames = [];
+var closing = document.getElementById('closing');
 
-function VoteItem(image, name) {
+// Class that holds each product and associated vote data
+function VoteItem(image, name, votes, timesAppeared) {
   this.name = name;
   this.image = image;
-  this.votes = 0;
-  this.timesAppeared = 0;
+  this.votes = votes;
+  this.timesAppeared = timesAppeared;
   voteOptions.push(this);
   voteOptionNames.push(this.name);
 }
 
 VoteItem.prototype.render = function(imgLoc) {
-  // this.timesAppeared++;
   imgLoc.src = this.image;
   imgLoc.nextElementSibling.textContent = this.name;
   imgLoc.nextElementSibling.id = this.name;
 }
+
+VoteItem.prototype.winPercent = function() {
+  return (this.votes / this.timesAppeared * 100).toString() + '%';
+}
+
+// I just wanted to seperate the constructors out to easily bypass them if data already exists
+
+function buildVoteItems() {
+  new VoteItem('img/bag.jpg', 'Roller Bag', 0, 0);
+  new VoteItem('img/banana.jpg', 'Banana Slicer', 0, 0);
+  new VoteItem('img/bathroom.jpg', 'Tablet Stand', 0, 0);
+  new VoteItem('img/boots.jpg', 'Toeless Rain Boots', 0, 0);
+  new VoteItem('img/breakfast.jpg', 'Breakfast Staion', 0, 0);
+  new VoteItem('img/bubblegum.jpg', 'Bubble Gum', 0, 0);
+  new VoteItem('img/chair.jpg', 'Chair', 0, 0);
+  new VoteItem('img/cthulhu.jpg', 'Elder God', 0, 0);
+  new VoteItem('img/dog-duck.jpg', 'Dog Mask', 0, 0);
+  new VoteItem('img/dragon.jpg', 'Dragon Meat', 0, 0);
+  new VoteItem('img/pen.jpg', 'Pen', 0, 0);
+  new VoteItem('img/pet-sweep.jpg', 'Pet Sweeper', 0, 0);
+  new VoteItem('img/scissors.jpg', 'Pizza Scissors', 0, 0);
+  new VoteItem('img/shark.jpg', 'Shark Sleeping Bag', 0, 0);
+  new VoteItem('img/sweep.png', 'Mommy\'s Little Sweeper', 0, 0);
+  new VoteItem('img/tauntaun.jpg', 'Fantasy Sleeping Bag', 0, 0);
+  new VoteItem('img/unicorn.jpg', 'Unicorn Meat', 0, 0);
+  new VoteItem('img/usb.gif', 'Tentacle USB Drive', 0, 0);
+  new VoteItem('img/water-can.jpg', 'Novelty Watering Can', 0, 0);
+  new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass', 0, 0);
+}
+
+// Get and Set to handle local storage of vote data
+
+function getStoredVoteData() {
+  var storedData = JSON.parse(localStorage.getItem('vote-data'));
+
+  if(storedData) {
+    console.log(storedData);
+
+    for(var i=0; i<storedData.length; i++) {
+      new VoteItem(storedData[i].image, storedData[i].name, storedData[i].votes, storedData[i].timesAppeared);
+    }
+
+  } else {
+    buildVoteItems();
+  }
+}
+
+function storeVoteData() {
+  localStorage.setItem('vote-data', JSON.stringify(voteOptions));
+}
+
+// Click event handler, is attached to each button on page load
+// The button's id is changed each time the image is changed, id is used to put votes where they're needed
 
 function voteHandler(event) {
   for(var i=0; i<images.length; i++)
@@ -36,19 +87,29 @@ function voteHandler(event) {
   var votedItem = voteOptions[voteOptionNames.indexOf(event.target.id)];
   votedItem.votes++;
   totalVotes++;
-  // if(totalVotes > 24) {
-  //   document.getElementById('show-results').disabled = false;
-  // }
 
   if(totalVotes > 24) {
+    storeVoteData();
     renderChart();
     return;
   }
   updateVoteOptions();
 }
 
-VoteItem.prototype.winPercent = function() {
-  return (this.votes / this.timesAppeared * 100).toString() + '%';
+function attachClickHandlers() {
+  for(var i=0; i<images.length; i++) {
+    images[i].nextElementSibling.addEventListener('click', voteHandler);
+  }
+}
+
+// Displays items to be voted on, and helper function
+
+function updateVoteOptions() {
+  var newOptions = generateVoteOptions();
+
+  for(var i=0; i<images.length; i++) {
+    voteOptions[newOptions[i]].render(images[i]);
+  }
 }
 
 // generates three -unique- numbers from 0 to the number of vote options -1
@@ -66,44 +127,47 @@ function generateVoteOptions() {
   return disallowedNumbers;
 }
 
-function updateVoteOptions() {
-  var newOptions = generateVoteOptions();
-
-  // voteOptions[newOptions[0]].render(optionOne);
-  // voteOptions[newOptions[1]].render(optionTwo);
-  // voteOptions[newOptions[2]].render(optionThree);
-
-  for(var i=0; i<images.length; i++) {
-    voteOptions[newOptions[i]].render(images[i]);
-  }
-}
+// draws the chart, and sets thank you message
 
 function renderChart() {
-  document.getElementsByTagName('section')[0].textContent = '';
+  document.getElementById('vote-options').textContent = '';
 
   var data = buildChartData();
   var ctx = resultsChartDOM.getContext('2d');
 
   resultsChart = new Chart(ctx, {
-    type: 'polarArea',
+    type: 'bar',
     data: data,
     options: {
       responsive: false,
       animation: {
         duration: 4000,
         easing: 'easeInOutBounce'
+      },
+      scales: {
+        xAxes: [{
+          ticks: {
+            autoSkip: false,
+            stepSize: 1,
+            min: 20,
+            max: 20
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            min: 0,
+            stepSize: 1
+          }
+        }]
+      },
+      legend: {
+        display: false
       }
     },
-    scales: {
-      yAxes: [{
-        tick: {
 
-        }
-      }]
-    }
   }
   )
-  document.getElementById('closing').textContent = 'Thank you for participating!';
+  closing.textContent = 'Thank you for participating!';
 }
 
 function buildChartData() {
@@ -170,35 +234,9 @@ function tallyVotes() {
   return output;
 }
 
-new VoteItem('img/bag.jpg', 'Roller Bag');
-new VoteItem('img/banana.jpg', 'Banana Slicer');
-new VoteItem('img/bathroom.jpg', 'Tablet Stand');
-new VoteItem('img/boots.jpg', 'Toeless Rain Boots');
-new VoteItem('img/breakfast.jpg', 'Breakfast Staion');
-new VoteItem('img/bubblegum.jpg', 'Bubble Gum');
-new VoteItem('img/chair.jpg', 'Chair');
-new VoteItem('img/cthulhu.jpg', 'Elder God');
-new VoteItem('img/dog-duck.jpg', 'Dog Mask');
-new VoteItem('img/dragon.jpg', 'Dragon Meat');
-new VoteItem('img/pen.jpg', 'Pen');
-new VoteItem('img/pet-sweep.jpg', 'Pet Sweeper');
-new VoteItem('img/scissors.jpg', 'Pizza Scissors');
-new VoteItem('img/shark.jpg', 'Shark Sleeping Bag');
-new VoteItem('img/sweep.png', 'Mommy\s Little Sweeper');
-new VoteItem('img/tauntaun.jpg', 'Fantasy Sleeping Bag');
-new VoteItem('img/unicorn.jpg', 'Unicorn Meat');
-new VoteItem('img/usb.gif', 'Tentacle USB Drive');
-new VoteItem('img/water-can.jpg', 'Novelty Watering Can');
-new VoteItem('img/wine-glass.jpg', 'Novelty Jumbo Wine Glass');
 
-// optionOne.nextElementSibling.addEventListener('click', voteHandler);
-// optionTwo.nextElementSibling.addEventListener('click', voteHandler);
-// optionThree.nextElementSibling.addEventListener('click', voteHandler);
+attachClickHandlers();
 
-for(var i=0; i<images.length; i++) {
-  images[i].nextElementSibling.addEventListener('click', voteHandler);
-}
-
-// document.getElementById('show-results').addEventListener('click', renderTable);
+getStoredVoteData();
 
 updateVoteOptions();
